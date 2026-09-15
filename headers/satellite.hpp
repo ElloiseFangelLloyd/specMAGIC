@@ -6,15 +6,19 @@
 #include <cmath>
 #include "constants.hpp"
 #include "types.hpp"
+#include "satellite_info.hpp"
+#include "navigation.hpp"
 
 namespace Satellite {
 
-    MAGIC_EXACT calcObsTime(int start_hour, int start_minute, int line, int n_lines);
+    MAGIC_EXACT calcObsTime(unsigned int line, Metadata info, DateTime time);
 
     int flipVertical(int line, int height);
 
-    void geo2MTGImage(MAGIC_EXACT lat_rad, MAGIC_EXACT lon_rad,
-        int nav_res, int col_off, int line_off,
-        int max_cols, int max_lines, int& col, int& line);
+    MAGIC_EXACT resolutionFactor(Metadata& metadata);
+
+    void geo2Image(MAGIC_EXACT lat_rad, MAGIC_EXACT lon_rad, Metadata& metadata,
+        unsigned int& col, unsigned int& line);
+
 
 }

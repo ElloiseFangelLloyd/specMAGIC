@@ -17,7 +17,7 @@ MTG_RAW_DIR="${MTG_RAW_DIR:-}"
 ALBEDO="${ALBEDO:-LANDMAP}"
 EXTENT="40.0 -15.0 65.0 30.0 1.0"
 
-valid_channels=(vis_04 vis_05 vis_06 vis_08 vis_09 nir_13 nir_16 nir_22)
+valid_channels=(vis_04 vis_05 vis_06 vis_08 vis_09 nir_13 nir_16 nir_22 ir_87)
 
 usage() {
     echo "Usage: $0 [options]"
@@ -49,6 +49,7 @@ is_valid_channel() {
     return 1
 }
 
+export SATELLITE=mtg 
 
 while [[ $# -gt 0 ]]; do
     case "$1" in

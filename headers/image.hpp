@@ -9,26 +9,8 @@
 #include "matrix.hpp"
 #include "netcdf.hpp"
 #include "helpers.hpp"
+#include "satellite_info.hpp"
 
-struct Metadata {
-    
-    unsigned int num_lines;       // number of lines
-    unsigned int num_columns;     // number of columns with information
-    int line_offset;
-    int column_offset;		       
-    unsigned int nav_lres;	       // line resolution
-    unsigned int nav_cres;	       // column resolution
-
-    int wavelength;       // what wavelength satellite sees in
-
-    // Default ctor so compiler doesn't complain
-    Metadata() : num_lines(11136), num_columns(11136), line_offset(5568), column_offset(5568), nav_lres(222), nav_cres(222), wavelength(640) {}
-
-    // These values are taken from DWD
-    Metadata(float lambda) : num_lines(11136), num_columns(11136), line_offset(5568), column_offset(5568), nav_lres(222), nav_cres(222), wavelength(lambda) {}
-
-
-};
 
 struct Image {
 
@@ -110,9 +92,8 @@ struct Image {
 
     void readImage(std::string channel) {
 
-        int lambda = channelToWavelength(channel);
         // Initialise the metadata
-        info = Metadata(lambda);
+        info = loadMetadata(channel);
 
         // Read the actual image
         int status = parseImage(channel); 
@@ -167,10 +148,20 @@ private:
         NC_CHECK(nc_inq_dimid(ncid, "y", &dimid));
         NC_CHECK(nc_inq_dimlen(ncid, dimid, &ny));
 
+        // Get the num cols and num lines from the image
+        info.num_columns = static_cast<unsigned int>(nx);
+        info.num_lines = static_cast<unsigned int>(ny);
+        info.column_offset = static_cast<int>(nx / 2);
+        info.line_offset = static_cast<int>(ny / 2);
+
         im = Matrix((int)ny, (int)nx);
 
         // Get the variable id
         NC_CHECK(nc_inq_varid(ncid, channel.c_str(), &varid));
+
+        float resolution;
+        NC_CHECK(nc_get_att_float(ncid, varid, "resolution", &resolution));
+        info.resolution = resolution;
 
         // Read sat data into short buffer
         NC_CHECK(nc_get_var_short(ncid, varid, im.data()));

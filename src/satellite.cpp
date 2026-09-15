@@ -6,12 +6,10 @@ namespace Satellite {
     // As the satellite takes some time to take the entire picture
     // TODO: The old code may have been wrapping the time incorrectly. Check this. 
     // TODO: Get this directly from the filename?
-    MAGIC_EXACT calcObsTime(int start_hour, int start_minute, int line, int n_lines) {
+    MAGIC_EXACT calcObsTime(unsigned int line, Metadata info, DateTime time) {
         
-        MAGIC_EXACT observation_time_utc =
-            start_hour +
-            start_minute / 60.0 +
-            MAGIC_EXACT(line) * (FULL_DISK_SCAN_MIN / n_lines / 60.0);
+        MAGIC_EXACT observation_time_utc = time.hour + time.minute / 60.0 +
+            MAGIC_EXACT(line) * (info.full_disk_scan_min / info.num_lines / 60.0);
             
         if (observation_time_utc < 0.0) return 24.0 - observation_time_utc;
 
@@ -21,6 +19,36 @@ namespace Satellite {
         // return fmod(observation_time_utc + 24.0, 24.0);
 
     }
+    MAGIC_EXACT resolutionFactor(Metadata& metadata) {
+        int resolution = static_cast<int>(std::lround(metadata.resolution));
+
+        auto it = metadata.resolution_factors.find(resolution);
+
+        if (it == metadata.resolution_factors.end()) {
+            throw std::runtime_error(
+                "No navigation resolution factor configured for " +
+                std::to_string(resolution)
+            );
+        }
+
+        return it->second;
+    }
+
+    // int resolutionFactor(Metadata& metadata) {
+    //     const auto it =
+    //         metadata.resolution_factors.find(
+    //             static_cast<int>(metadata.nav_lres)
+    //         );
+
+    //     if (it == metadata.resolution_factors.end()) {
+    //         throw std::runtime_error(
+    //             "No navigation resolution factor configured for " +
+    //             std::to_string(metadata.nav_lres)
+    //         );
+    //     }
+
+    //     return it->second;
+    // }
 
     // Depending on how image origin is defined this may be needed
     int flipVertical(int line, int height) {
@@ -52,32 +80,15 @@ namespace Satellite {
      *
      * @throws std::runtime_error if the point is not visible or outside the image
      */
-    void geo2MTGImage(MAGIC_EXACT lat_rad, MAGIC_EXACT lon_rad,
-        int nav_res, int col_off, int line_off,
-        int max_cols, int max_lines,
-        int& col, int& line) {
+    void geo2Image(MAGIC_EXACT lat_rad, MAGIC_EXACT lon_rad, Metadata& metadata,
+        unsigned int& col, unsigned int& line) {
 
         // -----------------------------
         // MTG navigation resolution
         // -----------------------------
 
-        // Not currently in use!
-
         //MAGIC_EXACT navigation_resolution;   // [urad per pixel]
-        int resolution_factor;
-
-        if (nav_res == 222) {
-            // navigation_resolution = 222.623596;
-            resolution_factor = 3;
-        }
-        else if (nav_res == 667) {
-            // navigation_resolution = 667.2044067;
-            resolution_factor = 1;
-        }
-        else {
-            throw std::runtime_error(
-                "Invalid MTG navigation resolution: " + std::to_string(nav_res));
-        }
+        MAGIC_EXACT resolution_factor = resolutionFactor(metadata);
 
         // -------------------------------------------------
         // Convert geodetic latitude -> geocentric latitude
@@ -100,9 +111,8 @@ namespace Satellite {
         // --------------------------------------------
         // Vector from satellite to Earth surface point
         // --------------------------------------------
-
-        const MAGIC_EXACT r1 =
-            SATELLITE_RADIUS_KM -
+        const MAGIC_EXACT satellite_radius = metadata.satellite_radius_km;
+        const MAGIC_EXACT r1 = satellite_radius -
             earth_radius * cos_lat * std::cos(lon_rad);
 
         const MAGIC_EXACT r2 =
@@ -126,7 +136,7 @@ namespace Satellite {
         // --------------------------------------------
 
         const MAGIC_EXACT visibility =
-            SATELLITE_RADIUS_KM * std::cos(alpha) * std::cos(beta) -
+            metadata.satellite_radius_km * std::cos(alpha) * std::cos(beta) -
             range * (std::pow(std::cos(beta), 2.0) +
                     RPE2 * std::pow(std::sin(beta), 2.0));
 
@@ -138,30 +148,30 @@ namespace Satellite {
         // --------------------------------------------
         // Convert angles to image coordinates
         // --------------------------------------------
-
-        constexpr MAGIC_EXACT MTG_SCAN_SCALE = 3712.0 / 17.832;
+        const MAGIC_EXACT scan_scale = metadata.scan_scale_numerator /
+            metadata.scan_scale_denominator;
 
         const MAGIC_EXACT column =
-            col_off -
-            alpha * resolution_factor * MTG_SCAN_SCALE * (180.0 / PI);
+            metadata.column_offset -
+            alpha * resolution_factor * scan_scale * (180.0 / PI);
 
         const MAGIC_EXACT line_val =
-            line_off -
-            beta * resolution_factor * MTG_SCAN_SCALE * (180.0 / PI);
+            metadata.line_offset -
+            beta * resolution_factor * scan_scale * (180.0 / PI);
 
         // --------------------------------------------
         // Round to nearest pixel
         // --------------------------------------------
 
-        col  = static_cast<int>(std::lround(column));
-        line = static_cast<int>(std::lround(line_val));
+        col  = static_cast<uint>(std::lround(column));
+        line = static_cast<uint>(std::lround(line_val));
 
         // --------------------------------------------
         // Image bounds check
         // --------------------------------------------
 
-        if (col < 0 || col >= max_cols ||
-            line < 0 || line >= max_lines) {
+        if (col < 0 || col >= metadata.num_columns ||
+            line < 0 || line >= metadata.num_lines) {
             throw std::runtime_error(
                 "Mapped pixel lies outside MTG image bounds");
         }

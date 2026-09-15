@@ -125,16 +125,13 @@ int main(int argc, char* argv[]) {
             a.makeArea(geo, pix, c.deltalon);
 
             // Get the pixel position in line and columns
-            int col, lin;
-            Satellite::geo2MTGImage(a.lat, a.lon, img.info.nav_cres, (img.info.column_offset + NAV_CORRECTION_COLOFFSET), 
-                (img.info.line_offset + NAV_CORRECTION_LINOFFSET), img.info.num_columns, img.info.num_lines, 
-                col, lin);
+            unsigned int col, lin;
+            Satellite::geo2Image(a.lat, a.lon, img.info, col, lin);
 
             int line = Satellite::flipVertical(lin, img.info.num_lines);
 
             // Get the time (as experienced by satellite)
-            MAGIC_EXACT UTC_time = Satellite::calcObsTime(img.timestamp.hour, img.timestamp.minute, 
-                line, img.info.num_lines);
+            MAGIC_EXACT UTC_time = Satellite::calcObsTime(line, img.info, img.timestamp);
 
             // Calculate all the other sun geometry things
             SolarParameters sun = SunGeometry::solarParameters(img.timestamp, UTC_time, a);
