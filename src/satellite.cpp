@@ -19,36 +19,7 @@ namespace Satellite {
         // return fmod(observation_time_utc + 24.0, 24.0);
 
     }
-    MAGIC_EXACT resolutionFactor(Metadata& metadata) {
-        int resolution = static_cast<int>(std::lround(metadata.resolution));
 
-        auto it = metadata.resolution_factors.find(resolution);
-
-        if (it == metadata.resolution_factors.end()) {
-            throw std::runtime_error(
-                "No navigation resolution factor configured for " +
-                std::to_string(resolution)
-            );
-        }
-
-        return it->second;
-    }
-
-    // int resolutionFactor(Metadata& metadata) {
-    //     const auto it =
-    //         metadata.resolution_factors.find(
-    //             static_cast<int>(metadata.nav_lres)
-    //         );
-
-    //     if (it == metadata.resolution_factors.end()) {
-    //         throw std::runtime_error(
-    //             "No navigation resolution factor configured for " +
-    //             std::to_string(metadata.nav_lres)
-    //         );
-    //     }
-
-    //     return it->second;
-    // }
 
     // Depending on how image origin is defined this may be needed
     int flipVertical(int line, int height) {
@@ -82,13 +53,6 @@ namespace Satellite {
      */
     void geo2Image(MAGIC_EXACT lat_rad, MAGIC_EXACT lon_rad, Metadata& metadata,
         unsigned int& col, unsigned int& line) {
-
-        // -----------------------------
-        // MTG navigation resolution
-        // -----------------------------
-
-        //MAGIC_EXACT navigation_resolution;   // [urad per pixel]
-        MAGIC_EXACT resolution_factor = resolutionFactor(metadata);
 
         // -------------------------------------------------
         // Convert geodetic latitude -> geocentric latitude
@@ -128,36 +92,26 @@ namespace Satellite {
         // Viewing angles (satellite scan angles)
         // --------------------------------------------
 
-        const MAGIC_EXACT alpha = std::atan2(r2, r1);   // east-west scan angle
-        const MAGIC_EXACT beta  = std::asin(r3 / range); // north-south scan angle
+        MAGIC_EXACT alpha = std::atan2(r2, r1);   // east-west scan angle
+        MAGIC_EXACT beta  = std::asin(r3 / range); // north-south scan angle
 
         // --------------------------------------------
         // Visibility check (Earth limb test)
         // --------------------------------------------
 
-        const MAGIC_EXACT visibility =
-            metadata.satellite_radius_km * std::cos(alpha) * std::cos(beta) -
-            range * (std::pow(std::cos(beta), 2.0) +
-                    RPE2 * std::pow(std::sin(beta), 2.0));
+        MAGIC_EXACT visibility = metadata.satellite_radius_km *
+                std::cos(alpha) * std::cos(beta)
+            - range *
+                (std::pow(std::cos(beta), 2.0) +
+                RPE2 * std::pow(std::sin(beta), 2.0));
 
         if (visibility < 0.0) {
             throw std::runtime_error(
                 "Geographic point is not visible from MTG satellite");
         }
 
-        // --------------------------------------------
-        // Convert angles to image coordinates
-        // --------------------------------------------
-        const MAGIC_EXACT scan_scale = metadata.scan_scale_numerator /
-            metadata.scan_scale_denominator;
-
-        const MAGIC_EXACT column =
-            metadata.column_offset -
-            alpha * resolution_factor * scan_scale * (180.0 / PI);
-
-        const MAGIC_EXACT line_val =
-            metadata.line_offset -
-            beta * resolution_factor * scan_scale * (180.0 / PI);
+        MAGIC_EXACT column = metadata.column_offset - alpha / metadata.angular_sampling_rad;
+        MAGIC_EXACT line_val = metadata.line_offset - beta / metadata.angular_sampling_rad;
 
         // --------------------------------------------
         // Round to nearest pixel
@@ -169,9 +123,8 @@ namespace Satellite {
         // --------------------------------------------
         // Image bounds check
         // --------------------------------------------
-
-        if (col < 0 || col >= metadata.num_columns ||
-            line < 0 || line >= metadata.num_lines) {
+        if (col == 0 || col >= metadata.num_columns ||
+            line == 0 || line >= metadata.num_lines) {
             throw std::runtime_error(
                 "Mapped pixel lies outside MTG image bounds");
         }

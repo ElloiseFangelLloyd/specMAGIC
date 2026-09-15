@@ -15,8 +15,6 @@ namespace Satellite {
 
     int flipVertical(int line, int height);
 
-    MAGIC_EXACT resolutionFactor(Metadata& metadata);
-
     void geo2Image(MAGIC_EXACT lat_rad, MAGIC_EXACT lon_rad, Metadata& metadata,
         unsigned int& col, unsigned int& line);
 

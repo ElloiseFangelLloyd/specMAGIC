@@ -163,6 +163,16 @@ private:
         NC_CHECK(nc_get_att_float(ncid, varid, "resolution", &resolution));
         info.resolution = resolution;
 
+        int resolution_km = static_cast<int>(std::lround(info.resolution));
+
+        auto it = info.angular_sampling.find(resolution_km);
+
+        if (it == info.angular_sampling.end()) {
+            throw std::runtime_error("No angular sampling configured for resolution " +
+                std::to_string(resolution_km) + " km");
+        }
+
+        info.angular_sampling_rad = it->second;
         // Read sat data into short buffer
         NC_CHECK(nc_get_var_short(ncid, varid, im.data()));
 

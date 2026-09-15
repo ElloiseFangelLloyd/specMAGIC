@@ -8,30 +8,28 @@
 
 
 struct Metadata {
-    // Image dimensions
+
     unsigned int num_lines;
     unsigned int num_columns;
 
-    // Navigation offsets
+    // Defines the origin of the image
     int line_offset;
     int column_offset;
 
-    // Actual product resolution
     MAGIC_EXACT resolution;
 
-    // Satellite-specific navigation
     MAGIC_EXACT satellite_radius_km;
-    MAGIC_EXACT scan_scale_numerator;
-    MAGIC_EXACT scan_scale_denominator;
-
-    // Satellite-specific timing
     MAGIC_EXACT full_disk_scan_min;
 
-    // Spectral information
+    // Selected sampling angle
+    MAGIC_EXACT angular_sampling_rad;
+
     int wavelength;
 
-    // Configuration tables
-    std::unordered_map<int, MAGIC_EXACT> resolution_factors;
+    // Available sampling grids for this satellite
+    std::unordered_map<int, MAGIC_EXACT> angular_sampling;
+
+    // available wavelengths for this satellite
     std::unordered_map<std::string, int> wavelengths;
 };
 
@@ -60,19 +58,22 @@ inline Metadata loadMetadata(const std::string& channel){
     Metadata metadata;
 
     metadata.satellite_radius_km = config["navigation"]["satellite_radius_km"].value_or(0.0);
-    metadata.scan_scale_numerator = config["navigation"]["scan_scale_numerator"].value_or(0.0);
-    metadata.scan_scale_denominator = config["navigation"]["scan_scale_denominator"].value_or(0.0);
     metadata.full_disk_scan_min = config["navigation"]["full_disk_scan_min"].value_or(0.0);
     // ------------------------------------------------------------
     // Resolution factors
     // ------------------------------------------------------------
 
-    if (const auto* factors = config["navigation"]["resolution_factors"].as_table()) {
-        for (const auto& [key, value] : *factors) {
+    if (const auto* grids =
+            config["grids"].as_table())
+    {
+        for (const auto& [key, value] : *grids) {
             const int resolution = std::stoi(std::string(key));
 
-            if (const auto factor = value.value<MAGIC_EXACT>()) {
-                metadata.resolution_factors[resolution] = *factor;
+            if (const auto* grid = value.as_table()) {
+                if (const auto sampling =
+                        (*grid)["angular_sampling_rad"].value<MAGIC_EXACT>()) {
+                    metadata.angular_sampling[resolution] = *sampling;
+                }
             }
         }
     }

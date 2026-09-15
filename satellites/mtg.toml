@@ -4,14 +4,16 @@ name = "MTG"
 [navigation]
 satellite_radius_km = 42164.0
 
-scan_scale_numerator = 3712.0
-scan_scale_denominator = 17.832
+[grids."1000"]
+angular_sampling_rad = 2.7943576e-5
+
+[grids."2000"]
+angular_sampling_rad = 5.5887153e-5
+
+[grids."500"]
+angular_sampling_rad = 1.3971788e-5
 
 full_disk_scan_min = 10.0
-
-[navigation.resolution_factors]
-"1000" = 3.0
-"2000" = 1.5
 
 [channels]
 vis_04 = 440
