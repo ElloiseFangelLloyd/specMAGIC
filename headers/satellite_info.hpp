@@ -9,6 +9,7 @@
 
 struct Metadata {
 
+    // number of pixels in x and y
     unsigned int num_lines;
     unsigned int num_columns;
 
@@ -16,12 +17,13 @@ struct Metadata {
     int line_offset;
     int column_offset;
 
+    // get this from the image
     MAGIC_EXACT resolution;
 
     MAGIC_EXACT satellite_radius_km;
     MAGIC_EXACT full_disk_scan_min;
 
-    // Selected sampling angle
+    // Selected sampling angle for this run
     MAGIC_EXACT angular_sampling_rad;
 
     int wavelength;
@@ -41,60 +43,49 @@ inline Metadata loadMetadata(const std::string& channel){
             "SATELLITE environment variable is not set");
     }
 
+    // look for the toml
     std::string satellite = satellite_env;
+    std::filesystem::path config_path = std::filesystem::path("satellites") / (satellite + ".toml");
 
-    std::filesystem::path config_path =
-        std::filesystem::path("satellites") /
-        (satellite + ".toml");
-
+    // there has to be a toml
     if (!std::filesystem::exists(config_path)) {
         throw std::runtime_error(
             "Satellite configuration file not found: " +
             config_path.string());
     }
 
+    // read the toml
     toml::table config = toml::parse_file(config_path.string());
 
     Metadata metadata;
 
+    // put the toml values into the metadata struct
     metadata.satellite_radius_km = config["navigation"]["satellite_radius_km"].value_or(0.0);
     metadata.full_disk_scan_min = config["navigation"]["full_disk_scan_min"].value_or(0.0);
-    // ------------------------------------------------------------
-    // Resolution factors
-    // ------------------------------------------------------------
 
-    if (const auto* grids =
-            config["grids"].as_table())
-    {
-        for (const auto& [key, value] : *grids) {
-            const int resolution = std::stoi(std::string(key));
+    // to deal with the various possible resolutions
+    if (auto* grids = config["grids"].as_table()) {
+        for (auto& [key, value] : *grids) {
+            int resolution = std::stoi(std::string(key));
 
-            if (const auto* grid = value.as_table()) {
-                if (const auto sampling =
-                        (*grid)["angular_sampling_rad"].value<MAGIC_EXACT>()) {
+            if (auto* grid = value.as_table()) {
+                if (auto sampling = (*grid)["angular_sampling_rad"].value<MAGIC_EXACT>()) {
                     metadata.angular_sampling[resolution] = *sampling;
                 }
             }
         }
     }
-    // ------------------------------------------------------------
-    // Channel wavelengths
-    // ------------------------------------------------------------
 
+    // to deal with the various possible channels
     if (auto* channels = config["channels"].as_table()) {
-        for (const auto& [key, value] : *channels) {
-            if (const auto wavelength = value.value<int>()) {
-                metadata.wavelengths[
-                    std::string(key)
-                ] = *wavelength;
+        for (auto& [key, value] : *channels) {
+            if (auto wavelength = value.value<int>()) {metadata.wavelengths[
+                    std::string(key)] = *wavelength;
             }
         }
     }
 
-    // ------------------------------------------------------------
-    // Current channel
-    // ------------------------------------------------------------
-
+    // what channel are we using now
     auto wavelength_it = metadata.wavelengths.find(channel);
 
     if (wavelength_it == metadata.wavelengths.end()) {

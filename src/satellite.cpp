@@ -58,35 +58,27 @@ namespace Satellite {
         // Convert geodetic latitude -> geocentric latitude
         // -------------------------------------------------
 
-        const MAGIC_EXACT geocentric_lat =
-            std::atan(RPE2 * std::tan(lat_rad));
+        MAGIC_EXACT geocentric_lat = std::atan(RPE2 * std::tan(lat_rad));
 
-        const MAGIC_EXACT cos_lat = std::cos(geocentric_lat);
-        const MAGIC_EXACT sin_lat = std::sin(geocentric_lat);
+        MAGIC_EXACT cos_lat = std::cos(geocentric_lat);
+        MAGIC_EXACT sin_lat = std::sin(geocentric_lat);
 
         // --------------------------------------------
         // Earth radius at given latitude (ellipsoid)
         // --------------------------------------------
 
-        const MAGIC_EXACT earth_radius =
-            EARTH_POLAR_RADIUS_KM /
-            std::sqrt(1.0 - EPSI2 * cos_lat * cos_lat);
+        MAGIC_EXACT earth_radius = EARTH_POLAR_RADIUS_KM / std::sqrt(1.0 - EPSI2 * cos_lat * cos_lat);
 
         // --------------------------------------------
         // Vector from satellite to Earth surface point
         // --------------------------------------------
-        const MAGIC_EXACT satellite_radius = metadata.satellite_radius_km;
-        const MAGIC_EXACT r1 = satellite_radius -
-            earth_radius * cos_lat * std::cos(lon_rad);
+        MAGIC_EXACT satellite_radius = metadata.satellite_radius_km;
 
-        const MAGIC_EXACT r2 =
-        -earth_radius * cos_lat * std::sin(lon_rad);
+        MAGIC_EXACT r1 = satellite_radius - earth_radius * cos_lat * std::cos(lon_rad);
+        MAGIC_EXACT r2 = - earth_radius * cos_lat * std::sin(lon_rad);
+        MAGIC_EXACT r3 = earth_radius * sin_lat;
 
-        const MAGIC_EXACT r3 =
-            earth_radius * sin_lat;
-
-        const MAGIC_EXACT range =
-            std::sqrt(r1 * r1 + r2 * r2 + r3 * r3);
+        MAGIC_EXACT range = std::sqrt(r1 * r1 + r2 * r2 + r3 * r3);
 
         // --------------------------------------------
         // Viewing angles (satellite scan angles)
@@ -105,9 +97,11 @@ namespace Satellite {
                 (std::pow(std::cos(beta), 2.0) +
                 RPE2 * std::pow(std::sin(beta), 2.0));
 
+        // This wont fire just if a pixel is in the dark or similar
+        // but checks whether we are simulating over a grid that is not covered
         if (visibility < 0.0) {
             throw std::runtime_error(
-                "Geographic point is not visible from MTG satellite");
+                "Geographic point is not visible from satellite");
         }
 
         MAGIC_EXACT column = metadata.column_offset - alpha / metadata.angular_sampling_rad;
@@ -126,9 +120,9 @@ namespace Satellite {
         if (col == 0 || col >= metadata.num_columns ||
             line == 0 || line >= metadata.num_lines) {
             throw std::runtime_error(
-                "Mapped pixel lies outside MTG image bounds");
+                "Mapped pixel lies outside image bounds");
         }
     }
 
-}   // Namespace Navigation
+}   // Namespace Satellite
 
