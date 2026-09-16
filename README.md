@@ -121,6 +121,7 @@ A destination check is implemented, so that if the files are found to already ex
 There exist some notes on various aspects of the program, linked below.
 
 :sunny: [Physics](https://github.com/dmidk/specMAGIC/blob/main/docs/physics.md)
+:cloud: [Including other satellites](https://github.com/dmidk/specMAGIC/blob/main/docs/other_satellites.md)
 :zap: [OpenMP for parallelism](https://github.com/dmidk/specMAGIC/blob/main/docs/omp.md)
 :key: [Input data](https://github.com/dmidk/specMAGIC/blob/main/docs/inputs.md)
 :artificial_satellite: [Meteosat Third Generation](https://github.com/dmidk/specMAGIC/blob/main/docs/mtg.md)
