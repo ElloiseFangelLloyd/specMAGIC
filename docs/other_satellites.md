@@ -26,13 +26,15 @@ export SATELLITE=mtg
 
 This tells the specMAGIC to search for a config file `mtg.toml`. A new `.toml` will be needed, see below, but remember also to change this export statement.
 
+The driver script defines the `$EXTENT`, which is the plotting extent used by the pre- and post-processing routines to make maps of the data. When modifying the driver script, make sure that the desired plotting `$EXTENT` is set to the region of interest.
+
 ### 2. Input data
 
 SpecMAGIC is expecting a single `*.nc` file containing the entire image for a given timestep. This file is expected to only contain a single channel. The preprocessing step in the demo version (which calls `extract.py`) will extract the `.zip` test data and produce this single `.nc` file. For differing data storage or file formats, additional preprocessing may be required.
 
 The input to specMAGIC needs to be a single file containing a single channel. 
 
-### Satellite information 
+### 3. Satellite information 
 
 specMAGIC will extract the image size and horizontal resolution directly from the file itself. No need to supply the number of pixels, etc. 
 
@@ -53,7 +55,7 @@ info.line_offset = static_cast<int>(ny / 2);
 
 If the origin is for some reason not the centre of the image, the user should exercise caution.
 
-### Setting up to run
+### 4. Setting up to run
 
 Under `satellites/`, there exists a file `mtg.toml`. To use a new satellite, a new `.toml` must be created containing all of this above information. See the existing `mtg.toml` for inspiration. 
 
@@ -70,7 +72,7 @@ refers to 1km resolution at nadir and its corresponding grid sampling angle. Not
 
 Follow the `readme.md` for instructions to specify the satellite data file path and run in non-demo mode.
 
-### Hardware
+### 5. Hardware
 
 The driver script specifies that specMAGIC should use 8 threads/cores in parallel, which are available on generally any laptop computer. If running on a larger setup, there may be more available. Change the number of tweaks by altering 
 
@@ -79,3 +81,7 @@ export OMP_NUM_THREADS=8
 ```
 
 Additional speedup should not be expected beyond 64 threads.
+
+### 6. Geography 
+
+See the [readme](https://github.com/dmidk/specMAGIC/blob/main/README.md) for notes on changing the simulated geographic area. 

@@ -30,7 +30,6 @@ git lfs install
 git lfs pull
 ```
 
-
 ## Input data
 
 This code is assuming the presence of input satellite data. Currently, only Meteosat Third Generation (MTG) is supported, but support for other satellites is forthcoming. The user must provide a file path to available satellite data. 
@@ -62,6 +61,14 @@ To see a full list of input options,
 ./scripts/mtg.sh -h
 ```
 Figures will appear in the `/figs` directory. By default, plots of GHI, DNI, CAL (cloud index) and CSR (clear-sky radiance) are produced. 
+
+## Choosing a geographic region 
+
+The region that specMAGIC plots over is defined in `magic-config.asc`. The user can specify the starting latitude and longitude, and the number of points that the simulated grid should extend from these points. The default is the MTG-view of the Northern Hemisphere, spanning from 0°N, 60°W to 65.025°N, 60.025°E. The spatial resolution of the output is also specified here as 0.025°. At present, altering the spatial resolution may result in unexpected behaviour.
+
+It is possible to specify a smaller region than seen by the satellite, which may be beneficial for performance reasons. Attempting to specify a simulated area outside of the satellite's field of view will raise a runtime error. 
+
+The post-processing routine to plot maps of the generated parameters plots a region over Denmark by default. It is also possible to plot the entire Northern Hemisphere region seen by MTG by passing `--whole-domain`.
 
 ## To run the code with other MTG data 
 
