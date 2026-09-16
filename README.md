@@ -64,7 +64,7 @@ Figures will appear in the `/figs` directory. By default, plots of GHI, DNI, CAL
 
 ## Choosing a geographic region 
 
-The region that specMAGIC plots over is defined in `magic-config.asc`. The user can specify the starting latitude and longitude, and the number of points that the simulated grid should extend from these points. The default is the MTG-view of the Northern Hemisphere, spanning from 0°N, 60°W to 65.025°N, 60.025°E. The spatial resolution of the output is also specified here as 0.025°. At present, altering the spatial resolution may result in unexpected behaviour.
+The region that specMAGIC produces output for is defined in `magic-config.asc`. The user can specify the starting latitude and longitude, and the number of points that the simulated grid should extend from these points. The default is the MTG-view of the Northern Hemisphere, spanning from 0°N, 60°W to 65.025°N, 60.025°E. The spatial resolution of the output is also specified here as 0.025°. At present, altering the spatial resolution may result in unexpected behaviour.
 
 It is possible to specify a smaller region than seen by the satellite, which may be beneficial for performance reasons. Attempting to specify a simulated area outside of the satellite's field of view will raise a runtime error. 
 
