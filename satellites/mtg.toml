@@ -3,6 +3,7 @@ name = "MTG"
 
 [navigation]
 satellite_radius_km = 42164.0
+full_disk_scan_min = 10.0
 
 [grids."1000"]
 angular_sampling_rad = 2.7943576e-5
@@ -12,8 +13,6 @@ angular_sampling_rad = 5.5887153e-5
 
 [grids."500"]
 angular_sampling_rad = 1.3971788e-5
-
-full_disk_scan_min = 10.0
 
 [channels]
 vis_04 = 440
