@@ -1,0 +1,33 @@
+[satellite]
+name = "MTG"
+
+[navigation]
+satellite_radius_km = 42164.0
+full_disk_scan_min = 10.0
+
+[grids."1000"]
+angular_sampling_rad = 2.7943576e-5
+
+[grids."2000"]
+angular_sampling_rad = 5.5887153e-5
+
+[grids."500"]
+angular_sampling_rad = 1.3971788e-5
+
+[channels]
+vis_04 = 440
+vis_05 = 510
+vis_06 = 640
+vis_08 = 865
+vis_09 = 914
+nir_13 = 1380
+nir_16 = 1610
+nir_22 = 2250
+ir_38 = 3800
+wv_63 = 6300
+wv_73 = 7350
+ir_87 = 8700
+ir_97 = 9660
+ir_105 = 10500
+ir_123 = 12300
+ir_133 = 13300

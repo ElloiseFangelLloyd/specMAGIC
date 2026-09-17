@@ -13,9 +13,6 @@ constexpr int KATO_MAX = 32;
 constexpr MAGIC_EXACT RADTODEGREE = 57.29577951308232087540;
 constexpr MAGIC_EXACT PI = 3.141592653589793;
 
-/// Satellite distance from Earth center [km]
-constexpr MAGIC_EXACT SATELLITE_RADIUS_KM = 42164.0;
-
 /// Earth polar radius [km]
 constexpr MAGIC_EXACT EARTH_POLAR_RADIUS_KM = 6356.5358;
 
@@ -23,8 +20,6 @@ constexpr MAGIC_EXACT EARTH_POLAR_RADIUS_KM = 6356.5358;
 constexpr MAGIC_EXACT EPSI2 = 0.00676765;     // (Re^2 - Rp^2) / Re^2
 constexpr MAGIC_EXACT RPE2  = 0.99323235;     // (Rp / Re)^2
 
-// For computing the line offset per pixel
-constexpr MAGIC_EXACT FULL_DISK_SCAN_MIN = 9.0;  // is this accurate for dk? TODO: Check
 constexpr MAGIC_EXACT HOURS_PER_MIN = 1.0 / 60.0;
 constexpr MAGIC_EXACT COS_SOLAR_ZENITH_MIN = 1e-3;
 
