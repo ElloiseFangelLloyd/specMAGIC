@@ -18,7 +18,7 @@ struct Metadata {
     int column_offset;
 
     // get this from the image
-    MAGIC_EXACT resolution;
+    int resolution; // in metres!
 
     MAGIC_EXACT satellite_radius_km;
     MAGIC_EXACT full_disk_scan_min;
