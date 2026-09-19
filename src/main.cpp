@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
 
             // Get the pixel position in line and columns
             unsigned int col, lin;
-            Satellite::geo2Image(a.lat, a.lon, img.info, col, lin);
+            Satellite::geo2Image(a.lat, a.lon - a.deltalon_rad, img.info, col, lin);
 
             int line = Satellite::flipVertical(lin, img.info.num_lines);
 
