@@ -36,9 +36,13 @@ int main(int argc, char* argv[]) {
     }
 
     // Safety check
-    if (argc < 2) {
-        printf("Expected a home directory file path, but was not given one. \n");
-        return 0;
+    if (argc != 4) {
+        fprintf(stderr,
+            "Usage: %s <home-directory> <channel> <timer-flag>\n"
+            "Expected exactly 3 input arguments, but received %d.\n"
+            "Example: %s /path/to/home ir_105 1\n",
+            argv[0], argc - 1, argv[0]);
+        return 1;
     }
 
     // Home directory same as in the driver script
