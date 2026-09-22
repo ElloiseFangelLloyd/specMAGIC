@@ -5,6 +5,10 @@ name = "MTG"
 satellite_radius_km = 42164.0
 full_disk_scan_min = 10.0
 
+[orientation]
+flip_vertical = true
+flip_horizontal = false
+
 [grids."1000"]
 angular_sampling_rad = 2.7943576e-5
 

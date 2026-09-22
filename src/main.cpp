@@ -132,7 +132,9 @@ int main(int argc, char* argv[]) {
             unsigned int col, lin;
             Satellite::geo2Image(a.lat, a.lon, img.info, col, lin);
 
-            int line = Satellite::flipVertical(lin, img.info.num_lines);
+            int line = lin; int column = col;
+            if (img.info.flip_vertical) line = Satellite::flipVertical(lin, img.info.num_lines);
+            if (img.info.flip_horizontal) column = Satellite::flipHorizontal(col, img.info.num_columns);
 
             // Get the time (as experienced by satellite)
             MAGIC_EXACT UTC_time = Satellite::calcObsTime(line, img.info, img.timestamp);
@@ -197,7 +199,7 @@ int main(int argc, char* argv[]) {
     
                     // Calculate the CAL for this pixel
                     MAGIC_REAL cal = effectiveCloudAlbedo(img, sun, climatologies, albedo_source, alb,
-                        modis, a, clim, line, col);
+                        modis, a, clim, line, column);
                     
                     // Put the CAL into the radiation matrix
                     radiation.encodeCAL(cal, a);
