@@ -28,6 +28,9 @@ struct Metadata {
 
     int wavelength;
 
+    bool flip_vertical;
+    bool flip_horizontal;
+
     // Available sampling grids for this satellite
     std::unordered_map<int, MAGIC_EXACT> angular_sampling;
 
@@ -62,6 +65,9 @@ inline Metadata loadMetadata(const std::string& channel){
     // put the toml values into the metadata struct
     metadata.satellite_radius_km = config["navigation"]["satellite_radius_km"].value_or(0.0);
     metadata.full_disk_scan_min = config["navigation"]["full_disk_scan_min"].value_or(0.0);
+    
+    metadata.flip_horizontal = config["orientation"]["flip_horizontal"].value_or(false);
+    metadata.flip_vertical = config["orientation"]["flip_vertical"].value_or(false);
 
     // to deal with the various possible resolutions
     if (auto* grids = config["grids"].as_table()) {

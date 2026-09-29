@@ -26,9 +26,13 @@ namespace Satellite {
         return height - line;
     }
 
+    int flipHorizontal(int col, int width) {
+	    return width - col;
+	}
+
 
     /**
-     * @brief Convert geographic coordinates (lat, lon) to MTG image pixel coordinates.
+     * @brief Convert geographic coordinates (lat, lon) to image pixel coordinates.
      *
      * This function implements the official geostationary projection used by MTG
      * (Meteosat Third Generation). It maps a geodetic Earth position (latitude,
@@ -41,11 +45,6 @@ namespace Satellite {
      *
      * @param lat_rad   Latitude in radians
      * @param lon_rad   Longitude in radians (relative to satellite sub-point)
-     * @param nav_res   Navigation resolution (e.g. 222 or 667 for MTG products)
-     * @param col_off   Column offset (image center)
-     * @param line_off  Line offset (image center)
-     * @param max_cols  Number of columns in the image
-     * @param max_lines Number of lines in the image
      * @param[out] col  Resulting column index (0-based)
      * @param[out] line Resulting line index (0-based)
      *
