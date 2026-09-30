@@ -8,14 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added 
-- Added the option to download and run with MODIS high-resolution land albedo maps, instead of the coarse landmaps available by default. [#1](https://github.com/dmidk/specMAGIC/pull/1) @irenelivia [#12](https://github.com/dmidk/specMAGIC/pull/12) @SimonKamuk
-- Added the satellite `.toml` file to avoid hardcoded satellite-specific values. [#18](https://github.com/dmidk/specMAGIC/pull/18) @ElloiseFangelLloyd @KristianHMoller
+- Added the option to download and run with MODIS high-resolution land albedo maps, instead of the coarse landmaps available by default. [!1](https://github.com/dmidk/specMAGIC/pull/1) @irenelivia [!12](https://github.com/dmidk/specMAGIC/pull/12) @SimonKamuk
+- Added the satellite `.toml` file to avoid hardcoded satellite-specific values. [!18](https://github.com/dmidk/specMAGIC/pull/18) @ElloiseFangelLloyd @KristianHMoller
 
 ### Changed
-- Throw error message rather than silent failure in absorber interpolation. [#9](https://github.com/dmidk/specMAGIC/pull/9) @SimonKamuk
-- Get the climatologies' grid spacing directly from axis rather than assume the cell-centred grid assumption. [#10](https://github.com/dmidk/specMAGIC/pull/10) @SimonKamuk
-- Reworked `geo2MTGImage` function to work for other satellites as well as MTG. [#18](https://github.com/dmidk/specMAGIC/pull/18) @ElloiseFangelLloyd. 
-- Use longitude of the subsatellite point in the `geo2Image` function to correctly calculate for satellites located at nonzero longitudes. [#20](https://github.com/dmidk/specMAGIC/pull/20) @KristianHMoller
+- Throw error message rather than silent failure in absorber interpolation. [!9](https://github.com/dmidk/specMAGIC/pull/9) @SimonKamuk
+- Get the climatologies' grid spacing directly from axis rather than assume the cell-centred grid assumption. [!10](https://github.com/dmidk/specMAGIC/pull/10) @SimonKamuk
+- Reworked `geo2MTGImage` function to work for other satellites as well as MTG. [!18](https://github.com/dmidk/specMAGIC/pull/18) @ElloiseFangelLloyd. 
+- Use longitude of the subsatellite point in the `geo2Image` function to correctly calculate for satellites located at nonzero longitudes. [!20](https://github.com/dmidk/specMAGIC/pull/20) @KristianHMoller
 
 
 ## [v1.0.0]
