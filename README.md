@@ -14,7 +14,7 @@ Mueller, R.; Behrendt, T.; Hammer, A.; Kemper, A. [A New Algorithm for the Satel
 - A Linux installation 
 - CMake >= 3.16
 - C++ >= 17
-- GCC > 9.0 
+- GCC >= 9.0 
 - A uv installation, for dependency management. [Please see the uv docs for more information.](https://docs.astral.sh/uv/)
 ```bash
 curl -LsSf https://astral.sh/uv/install.sh | sh
